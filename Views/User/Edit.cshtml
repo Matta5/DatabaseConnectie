@@ -1,4 +1,4 @@
-﻿@model DatabaseConnectie.Models.UserEditViewModel
+﻿@model DatabaseConnectie.Models.User
 
 @{
     ViewData["Title"] = "Edit User";
@@ -11,21 +11,21 @@
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        @Html.LabelFor(model => model.CurrentUsername)
-        @Html.EditorFor(model => model.CurrentUsername, new { htmlAttributes = new { @class = "form-control", disabled = "disabled" } })
+        <label for="username" class="control-label">Current Username:</label>
+        @Html.TextBoxFor(model => model.username, new { @class = "form-control", disabled = "disabled" })
     </div>
 
     <div class="form-group">
-        @Html.LabelFor(model => model.NewUsername)
-        @Html.EditorFor(model => model.NewUsername, new { htmlAttributes = new { @class = "form-control" } })
-        @Html.ValidationMessageFor(model => model.NewUsername, "", new { @class = "text-danger" })
+        <label for="newUsername" class="control-label">New Username:</label>
+        @Html.TextBoxFor(model => model.newUsername, new { @class = "form-control" })
+        @Html.ValidationMessageFor(model => model.newUsername, "", new { @class = "text-danger" })
     </div>
 
-    <input type="hidden" name="id" value="@Model.UserId" />
+    <input type="hidden" name="id" value="@Model.user_id" />
 
     <button type="submit" class="btn btn-primary">Save Changes</button>
 }
 
-@section Scripts {
-    @Html.RenderPartialAsync("_ValidationScriptsPartial").Result;
+@{
+    await Html.RenderPartialAsync("_ValidationScriptsPartial");
 }

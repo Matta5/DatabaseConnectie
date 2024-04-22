@@ -39,8 +39,29 @@ namespace DatabaseConnectie.Controllers
         // GET: UserController/Details/5
         public ActionResult Details(int id)
         {
-            return View();
+            User user = GetUserById(id);
+            return View(user);
         }
+
+        private User GetUserById(int id)
+        {
+            User user = null;
+
+            string connectionString = "Server=Mathijs\\MSSQLSERVER02;Database=AlbumExchange;User Id=test;Password=test;TrustServerCertificate=True;Encrypt=False;Trusted_Connection=true;";
+
+            using (SqlConnection s = new SqlConnection(connectionString))
+            {
+                s.Open();
+
+                string selectQuery = "SELECT user_id, username, email FROM [User] WHERE user_id = @UserId";
+                SqlCommand cmd = new SqlCommand(selectQuery, s);
+                cmd.Parameters.AddWithValue("@UserId", id);
+
+                }
+
+            return user;
+        }
+
 
         // GET: UserController/Create
         public ActionResult Create()
@@ -112,15 +133,13 @@ namespace DatabaseConnectie.Controllers
             }
         }
 
-        // POST: UserController/Edit/5
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Edit(int id, User viewModel)
         {
             try
             {
-                if (ModelState.IsValid)
-                {
+                
                     string connectionString = "Server=Mathijs\\MSSQLSERVER02;Database=AlbumExchange;User Id=test;Password=test;TrustServerCertificate=True;Encrypt=False;Trusted_Connection=true;";
 
                     using (SqlConnection s = new SqlConnection(connectionString))
@@ -134,16 +153,13 @@ namespace DatabaseConnectie.Controllers
                     }
 
                     return RedirectToAction(nameof(Index));
-                }
-                else
-                {
-                    return View(viewModel);
-                }
+                
             }
             catch (Exception ex)
             {
                 // Log the exception or handle it appropriately
-                return View("Error");
+                ModelState.AddModelError("", "An error occurred while processing your request.");
+                return View(viewModel);
             }
         }
 
