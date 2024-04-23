@@ -40,31 +40,49 @@ namespace DatabaseConnectie.Controllers
         public ActionResult Details(int id)
         {
             User user = GetUserById(id);
+
             return View(user);
         }
+
 
         private User GetUserById(int id)
         {
             User user = null;
-
             string connectionString = "Server=Mathijs\\MSSQLSERVER02;Database=AlbumExchange;User Id=test;Password=test;TrustServerCertificate=True;Encrypt=False;Trusted_Connection=true;";
 
             using (SqlConnection s = new SqlConnection(connectionString))
             {
                 s.Open();
 
-                string selectQuery = "SELECT user_id, username, email FROM [User] WHERE user_id = @UserId";
+                string selectQuery = "SELECT * FROM [User] WHERE user_id = @UserId";
                 SqlCommand cmd = new SqlCommand(selectQuery, s);
                 cmd.Parameters.AddWithValue("@UserId", id);
 
+                using (SqlDataReader reader = cmd.ExecuteReader())
+                {
+                    if (reader.Read())
+                    {
+                        user = new User
+                        {
+                            user_id = reader.GetInt32(0),
+                            username = reader.GetString(1),
+                            email = reader.GetString(2),
+                            password = reader.GetString(3)
+                            // Add other properties as needed
+                        };
+                    }
                 }
+            }
 
             return user;
         }
 
 
-        // GET: UserController/Create
-        public ActionResult Create()
+
+
+
+    // GET: UserController/Create
+    public ActionResult Create()
         {
             return View();
         }
