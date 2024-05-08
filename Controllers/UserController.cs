@@ -26,6 +26,7 @@ namespace DatabaseConnectie.Controllers
                         u.username = reader.GetString(1);
                         u.email = reader.GetString(2);
                         u.password = reader.GetString(3);
+                        u.profile_picture = reader.GetString(4);
                         users.Add(u);
                     }
                 }
@@ -164,7 +165,7 @@ namespace DatabaseConnectie.Controllers
                         s.Open();
                         string updateQuery = "UPDATE [User] SET username = @Username WHERE user_id = @UserId";
                         SqlCommand cmd = new SqlCommand(updateQuery, s);
-                        cmd.Parameters.AddWithValue("@Username", viewModel.newUsername);
+                        cmd.Parameters.AddWithValue("@Username", viewModel.new_username);
                         cmd.Parameters.AddWithValue("@UserId", id);
                         cmd.ExecuteNonQuery();
                     }

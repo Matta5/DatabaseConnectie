@@ -13,7 +13,7 @@
     <div class="form-group">
         <label for="newUsername" class="control-label">Username:</label>
         <input type="text" id="newUsername" name="newUsername" class="form-control" value="@Model.username" />
-        @Html.ValidationMessageFor(model => model.newUsername, "", new { @class = "text-danger" })
+        @Html.ValidationMessageFor(model => model.new_username, "", new { @class = "text-danger" })
     </div>
 
     <input type="hidden" name="id" value="@Model.user_id" />
