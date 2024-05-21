@@ -44,7 +44,9 @@
 
             </td>
             <td>
-                @Html.ActionLink("Edit", "Edit", new { id=item.user_id }) |
+                    <form asp-action="Edit" asp-route-id="@item.user_id" method="get" style="display:inline;">
+                        <input type="submit" value="Edit" />
+                    </form>
                 @Html.ActionLink("Details", "Details", new { id=item.user_id }) |
                 @Html.ActionLink("Delete", "Delete", new { id=item.user_id  })
             </td>

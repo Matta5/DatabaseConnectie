@@ -90,17 +90,50 @@ namespace DatabaseConnectie.Controllers
         // POST: UserController/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create(User user)
+        public async Task<IActionResult> Create(User user, IFormFile profilePicture)
         {
             try
             {
-                string connectionString = "Server = Mathijs\\MSSQLSERVER02; Database=AlbumExchange;User Id=test;Password=test;TrustServerCertificate=True;Encrypt=False;Trusted_Connection=true;";
+                // Check if a file has been uploaded
+                if (profilePicture != null)
+                {
+                    // Check if the file is an image
+                    var extension = Path.GetExtension(profilePicture.FileName).ToLower();
+                    if (extension != ".jpg" && extension != ".png")
+                    {
+                        ModelState.AddModelError("", "Invalid file type. Only JPG and PNG file types are allowed.");
+                        return View(user);
+                    }
 
+                    // Save the profile picture to wwwroot/Images and get the file path
+                    var fileName = Path.GetFileName(profilePicture.FileName);
+                    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/Images", fileName);
+                    using (var fileStream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await profilePicture.CopyToAsync(fileStream);
+                    }
+
+                    // Save the relative file path to the database
+                    user.profile_picture = Path.Combine("Images", fileName);
+                }
+
+                // User creation logic
+                string connectionString = "Server = Mathijs\\MSSQLSERVER02; Database=AlbumExchange;User Id=test;Password=test;TrustServerCertificate=True;Encrypt=False;Trusted_Connection=true;";
                 using (SqlConnection s = new SqlConnection(connectionString))
                 {
                     s.Open();
-                    string insertQuery = "INSERT INTO [User] (username, email, password) VALUES (@Username, @Email, @Password)";
-                    SqlCommand cmd = new SqlCommand(insertQuery, s);
+                    SqlCommand cmd;
+                    if (user.profile_picture != null)
+                    {
+                        string insertQuery = "INSERT INTO [User] (username, email, password, profile_picture) VALUES (@Username, @Email, @Password, @ProfilePicture)";
+                        cmd = new SqlCommand(insertQuery, s);
+                        cmd.Parameters.AddWithValue("@ProfilePicture", user.profile_picture);
+                    }
+                    else
+                    {
+                        string insertQuery = "INSERT INTO [User] (username, email, password) VALUES (@Username, @Email, @Password)";
+                        cmd = new SqlCommand(insertQuery, s);
+                    }
                     cmd.Parameters.AddWithValue("@Username", user.username);
                     cmd.Parameters.AddWithValue("@Email", user.email);
                     cmd.Parameters.AddWithValue("@Password", user.password);
@@ -165,7 +198,7 @@ namespace DatabaseConnectie.Controllers
                         s.Open();
                         string updateQuery = "UPDATE [User] SET username = @Username WHERE user_id = @UserId";
                         SqlCommand cmd = new SqlCommand(updateQuery, s);
-                        cmd.Parameters.AddWithValue("@Username", viewModel.new_username);
+                        cmd.Parameters.AddWithValue("@Username", viewModel.username);
                         cmd.Parameters.AddWithValue("@UserId", id);
                         cmd.ExecuteNonQuery();
                     }

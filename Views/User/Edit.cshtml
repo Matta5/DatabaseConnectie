@@ -11,8 +11,8 @@
     @Html.AntiForgeryToken()
 
     <div class="form-group">
-        <label for="newUsername" class="control-label">Username:</label>
-        <input type="text" id="newUsername" name="newUsername" class="form-control" value="@Model.username" />
+        <label for="username" class="control-label">Username:</label>
+        @Html.EditorFor(model => model.username)
         @Html.ValidationMessageFor(model => model.new_username, "", new { @class = "text-danger" })
     </div>
 
